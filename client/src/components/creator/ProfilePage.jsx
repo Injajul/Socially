@@ -68,15 +68,9 @@ const ProfilePage = () => {
       </div>
     );
 
-  // if (!userPosts?.length)
-  //   return (
-  //     <div className="flex flex-col items-center justify-center h-screen text-2xl text-gray-500">
-  //       <p>No posts yet for this user account.</p>
-  //     </div>
-  //   );
 
   return (
-    <div className="max-w-4xl mx-auto pt-10">
+    <div className="max-w-4xl mx-auto pt-10 pb-20 sm:pb-0">
       {/* 🧑‍💼 Profile Header */}
       <div className="flex items-center gap-6 px-4">
         <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
