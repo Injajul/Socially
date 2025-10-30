@@ -21,7 +21,7 @@ const CommentItem = ({ comment }) => {
   const dispatch = useDispatch();
   const { user } = useUser();
   const { getToken } = useAuth();
-console.log("comment from CommentItem",comment)
+// console.log("comment from CommentItem",comment)
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
   const [replyText, setReplyText] = useState("");

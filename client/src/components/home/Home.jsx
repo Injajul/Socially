@@ -4,7 +4,7 @@ import PostLists from "../post/PostLists";
 
 function Home() {
   return (
-    <div className="flex justify-center md:justify-between md: pl-24 max-w-[1200px] mx-auto px-4 mt-8 gap-10">
+    <div  className="flex flex-col md:flex-row justify-center md:justify-between max-w-[1200px] mx-auto px-2 sm:px-4 md:pl-24 mt-6 md:mt-8 gap-6 md:gap-10">
       {/* MAIN FEED (Posts) */}
       <div className="w-full md:w-[65%] lg:w-[60%]">
         <PostLists />

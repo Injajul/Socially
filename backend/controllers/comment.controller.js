@@ -49,6 +49,7 @@ export const addCommentToPost = async (req, res) => {
       success: true,
       message: "Comment added successfully.",
       comment: populatedComment,
+      
     });
   } catch (error) {
     console.error("❌ Error adding comment:", error);
@@ -277,7 +278,7 @@ export const toggleComment = async (req, res) => {
     const clerkId = req.auth.userId;
 
     // 1️⃣ Find the user
-    const user = await User.findOne({ clerkId })
+    const user = await User.findOne({ clerkId });
     if (!user) return res.status(404).json({ message: "User not found." });
 
     // 2️⃣ Find the comment (select only what we need)

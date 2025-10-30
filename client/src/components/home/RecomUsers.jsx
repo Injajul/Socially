@@ -19,7 +19,7 @@ const RecomUsers = () => {
   if (!users?.length) return null;
 
   return (
-    <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4 sticky top-20 h-fit">
+    <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-3    h-fit">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
         Suggested for you
       </h2>

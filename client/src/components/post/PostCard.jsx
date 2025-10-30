@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { useAuth } from "@clerk/clerk-react";
 import { FaRegCommentDots } from "react-icons/fa6";
 import { incrementPostView } from "../../redux/slices/postSlice";
 import LikeBtn from "./LikeBtn";
 import SaveBtn from "./SaveBtn";
 import { useNavigate } from "react-router-dom";
+
 import CommentsSection from "../comment/CommentsSection";
 import FollowBtn from "../creator/FollowBtn";
 
 const PostCard = ({ post }) => {
   const navigate = useNavigate();
   const { user, media, caption, tags, likes, views,commentsCount, createdAt, _id } = post;
-  // console.log("user on  PostCard",user)
+
+  const { comments } = useSelector((state) => state.comments);
+    console.log("comments on  PostCard",comments)
   const [showComments, setShowComments] = useState(false);
   const dispatch = useDispatch();
   const { getToken } = useAuth();
@@ -43,7 +46,7 @@ const PostCard = ({ post }) => {
   return (
     <div
       ref={postRef}
-      className="w-[400px] bg-white dark:bg-neutral-900 rounded-2xl shadow-sm mb-8 border border-gray-200 dark:border-neutral-700 overflow-hidden"
+       className="w-full md:w-[400px] lg:w-[450px] bg-gradient-to-r from-[#0f2027] via-[#203a43] to-[#0f2027] rounded-2xl shadow-sm mb-8 border border-gray-200 dark:border-neutral-700 overflow-hidden"
     >
       {/* 🧑‍💼 Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-neutral-700">

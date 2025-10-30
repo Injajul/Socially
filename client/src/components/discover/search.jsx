@@ -28,7 +28,7 @@ const SearchBar = () => {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for users or posts..."
-            className="w-full px-4 py-3 bg-gray-900 text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none placeholder-gray-400"
+            className="w-full px-4 py-3 bg-gray-900 text-white rounded-xl border border-blue-400 focus:ring-2 focus:ring-blue-500 outline-none placeholder-gray-400"
           />
          
         </div>

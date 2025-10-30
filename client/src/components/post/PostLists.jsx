@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllPosts,incrementPostView } from "../../redux/slices/postSlice";
+import { fetchAllPosts } from "../../redux/slices/postSlice";
 import PostCard from "./PostCard";
 import { useAuth } from "@clerk/clerk-react";
 const PostLists = () => {
@@ -41,16 +41,17 @@ console.log("posts",posts)
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-6 px-2 pb-20 sm:px-0">
-      {posts?.length > 0 ? (
-        posts.map((post) => (
-          <PostCard key={post._id} post={post} />
-        ))
-      ) : (
-        <div className="text-center text-gray-500 mt-10">No posts yet</div>
-      )}
-    </div>
-  );
-};
+  <div className="w-full max-w-2xl mx-auto sm:mt-6 px-3 sm:px-4 md:px-0 pb-24">
+    {posts?.length > 0 ? (
+      posts.map((post) => (
+        <PostCard key={post._id} post={post} />
+      ))
+    ) : (
+      <div className="text-center text-gray-500 mt-10">No posts yet on this user account</div>
+    )}
+  </div>
+);
+
+}
 
 export default PostLists;

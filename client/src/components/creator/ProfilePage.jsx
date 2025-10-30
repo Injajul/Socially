@@ -16,7 +16,7 @@ const ProfilePage = () => {
   const { userPosts, loading, error, userInfo } = useSelector(
     (state) => state.posts
   );
-    const { currentAuthUser } = useSelector((state) => state.user);
+  const { currentAuthUser } = useSelector((state) => state.user);
   console.log("userPosts", userPosts);
   console.log("userInfo", userInfo);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -68,12 +68,12 @@ const ProfilePage = () => {
       </div>
     );
 
-  if (!userPosts?.length)
-    return (
-      <div className="flex flex-col items-center justify-center h-screen text-gray-500">
-        <p>No posts yet.</p>
-      </div>
-    );
+  // if (!userPosts?.length)
+  //   return (
+  //     <div className="flex flex-col items-center justify-center h-screen text-2xl text-gray-500">
+  //       <p>No posts yet for this user account.</p>
+  //     </div>
+  //   );
 
   return (
     <div className="max-w-4xl mx-auto pt-10">
@@ -94,10 +94,12 @@ const ProfilePage = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl mb-2  font-semibold text-gray-900 dark:text-gray-100">
             {userInfo?.fullName}
           </h2>
-          <FollowBtn userId={userInfo?._id} />
+          <button>
+            <FollowBtn userId={userInfo?._id} />
+          </button>
         </div>
       </div>
 
@@ -125,53 +127,60 @@ const ProfilePage = () => {
       <div className="border-t border-gray-300 my-6"></div>
 
       {/* 🖼️ Posts Grid */}
-      <div className="grid grid-cols-3 gap-4 px-2">
-        {userPosts.map((post) => (
-          <div key={post._id} className="flex flex-col items-center">
-            <div
-              className="relative group cursor-pointer overflow-hidden w-full rounded-lg"
-              onClick={() => handlePostClick(post)} // 👈 modal trigger
-            >
-              {post.media[0].type === "video" ? (
-                <video
-                  src={post.media[0].url}
-                  className="object-cover w-full h-40 sm:h-52 md:h-64 rounded-lg"
-                  muted
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={post.media[0].url}
-                  alt="post"
-                  className="object-cover w-full h-40 sm:h-52 md:h-64 rounded-lg"
-                />
-              )}
+      {userPosts.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-2">
+          {userPosts.map((post) => (
+            <div key={post._id} className="flex flex-col items-center">
+              <div
+                className="relative group cursor-pointer overflow-hidden w-full rounded-lg"
+                onClick={() => handlePostClick(post)} // 👈 modal trigger
+              >
+                {post.media[0].type === "video" ? (
+                  <video
+                    src={post.media[0].url}
+                    className="object-cover w-full h-40 sm:h-52 md:h-64 rounded-lg"
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={post.media[0].url}
+                    alt="post"
+                    className="object-cover w-full h-40 sm:h-52 md:h-64 rounded-lg"
+                  />
+                )}
 
-              <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition flex justify-center items-center gap-6 text-white text-sm font-medium backdrop-blur-sm">
-                <p>❤️ {post.likesCount}</p>
-                <p>💬 {post.commentsCount}</p>
+                <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition flex justify-center items-center gap-6 text-white text-sm font-medium backdrop-blur-sm">
+                  <p>❤️ {post.likesCount}</p>
+                  <p>💬 {post.commentsCount}</p>
+                </div>
               </div>
+
+              {/* ✅ Only show buttons if this profile belongs to the logged-in user */}
+              {currentAuthUser?._id === post.user?._id && (
+                <div className="flex w-full gap-3 mt-3">
+                  <button
+                    onClick={() => navigate(`/update/${post._id}`)}
+                    className="px-4 py-1.5 flex-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(post._id)}
+                    className="px-4 py-1.5 flex-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-500 transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
-            {/* ✅ Only show buttons if this profile belongs to the logged-in user */}
-            {currentAuthUser?._id === post.user?._id && (
-              <div className="flex w-full gap-3 mt-3">
-                <button
-                  onClick={() => navigate(`/update/${post._id}`)}
-                  className="px-4 py-1.5 flex-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(post._id)}
-                  className="px-4 py-1.5 flex-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-500 transition"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-gray-500 text-lg sm:text-xl">
+          <p>No posts yet for this user account.</p>
+        </div>
+      )}
 
       {/* 🔥 Post Modal */}
       {isModalOpen && selectedPost && (

@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./AppRoutes";
 import { ToastContainer } from "react-toastify";
 import { fetchCurrentAuthUser } from "../redux/slices/userSlice";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth,SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 export default function App() {
   const dispatch = useDispatch();
    const { getToken, isLoaded } = useAuth();
@@ -27,6 +27,9 @@ useEffect(() => {
 
   return (
     <BrowserRouter>
+     {/* <SignedIn>
+        <AppRoutes />
+      </SignedIn> */}
       <AppRoutes />
       <ToastContainer position="top-right" autoClose={3000} />
     </BrowserRouter>

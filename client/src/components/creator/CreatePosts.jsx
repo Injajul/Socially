@@ -55,8 +55,8 @@ const CreatePosts = () => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-lg mx-auto mt-16 bg-gradient-to-b from-[#111827] via-[#1f2937] to-[#111827] 
-        text-gray-100 rounded-2xl shadow-2xl border border-gray-800 p-6 sm:p-8 relative overflow-hidden"
+      className="max-w-lg mx-auto  sm:mt-12 bg-gradient-to-b from-[#111827] via-[#1f2937] to-[#111827] 
+        text-gray-100 rounded-2xl shadow-2xl border border-gray-800 pb-20 p-6 sm:p-8 relative overflow-hidden"
     >
       <h2 className="text-3xl font-extrabold text-center bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
         Create Post
