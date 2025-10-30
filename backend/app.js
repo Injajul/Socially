@@ -14,8 +14,8 @@ import messageRoutes from "./routes/message.routes.js";
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  // "https://nexora-gfbk.vercel.app",
+  // "http://localhost:5173",
+  "socially-xi-wheat.vercel.app",
 ];
 
 console.log("✅ Allowed origins:", allowedOrigins);
