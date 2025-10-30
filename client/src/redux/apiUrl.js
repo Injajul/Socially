@@ -1,8 +1,8 @@
 
-const USE_LOCAL = true; 
+const USE_LOCAL = false; 
 
 const BASE_DOMAIN = USE_LOCAL
-  ? "http://localhost:5004": "https://nexora-1-cbyr.onrender.com"
+  ? "http://localhost:5004": "https://socially-d8k0.onrender.com"
 
   
 
