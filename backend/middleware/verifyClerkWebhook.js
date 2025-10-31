@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+console.log("Loaded webhook secret:", process.env.CLERK_WEBHOOK_SECRET);
 
 export const verifyClerkWebhook = async (req, res, next) => {
   const payload = JSON.stringify(req.body);
