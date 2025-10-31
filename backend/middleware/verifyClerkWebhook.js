@@ -2,7 +2,7 @@ import { Webhook } from "svix";
 import dotenv from "dotenv";
 dotenv.config();
 
-const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET; 
+const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
 export const verifyClerkWebhook = async (req, res, next) => {
   const payload = JSON.stringify(req.body);
@@ -16,7 +16,13 @@ export const verifyClerkWebhook = async (req, res, next) => {
       "svix-timestamp": headers["svix-timestamp"],
       "svix-signature": headers["svix-signature"],
     });
-     console.log("✅ Clerk webhook verified:", req.event.type);
+    console.log("Headers:", {
+      id: req.headers["svix-id"],
+      ts: req.headers["svix-timestamp"],
+      sig: req.headers["svix-signature"],
+    });
+
+    console.log("✅ Clerk webhook verified:", req.event.type);
     next();
   } catch (err) {
     console.error("Webhook signature verification failed:", err.message);

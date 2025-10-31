@@ -32,7 +32,16 @@ app.use(
 );
 
 // ⚠️ Important: Clerk requires raw body for signature verification
-app.post("/api/webhook/clerk", express.raw({ type: "application/json" }), verifyClerkWebhook, handleClerkWebhook);
+app.post("/api/webhook/clerk",
+  express.raw({ type: "application/json" }),
+  (req, res, next) => {
+    console.log("Raw body length:", req.body.length); // should be a Buffer
+    next();
+  },
+  verifyClerkWebhook,
+  handleClerkWebhook
+);
+
 
 // After webhook, parse JSON for rest of routes
 app.use(express.json());
