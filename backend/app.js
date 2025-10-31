@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-// ⚠️ Important: Clerk requires raw body for signature verification
+//  Important: Clerk requires raw body for signature verification
 app.post("/api/webhook/clerk",
   express.raw({ type: "application/json" }),
   (req, res, next) => {
