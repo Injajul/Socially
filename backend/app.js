@@ -36,6 +36,11 @@ app.post("/api/webhook/clerk",
   express.raw({ type: "application/json" }),
   (req, res, next) => {
     console.log("Raw body length:", req.body.length); // should be a Buffer
+    console.log("Headers:", {
+      'svix-id': req.headers['svix-id'],
+      'svix-timestamp': req.headers['svix-timestamp'],
+      'svix-signature': req.headers['svix-signature'],
+    });
     next();
   },
   verifyClerkWebhook,
