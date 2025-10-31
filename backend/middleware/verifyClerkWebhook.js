@@ -29,7 +29,7 @@ export const verifyClerkWebhook = async (req, res, next) => {
     req.event = evt;
     next();
   } catch (err) {
-    console.error("❌ Webhook signature verification failed:", err.message);
+    console.error(" Webhook signature verification failed:", err.message);
     return res.status(400).json({ message: "Invalid webhook signature" });
   }
 };
