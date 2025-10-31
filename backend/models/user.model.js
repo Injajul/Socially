@@ -7,21 +7,25 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    email:{
-      type:String,
+    email: {
+      type: String,
     },
-    fullName:{
-      type:String,
+    fullName: {
+      type: String,
     },
-    profileImage:{
-      type:String,
+
+    username: {
+      type: String,
     },
-    
+    profileImage: {
+      type: String,
+    },
+
     bio: {
       type: String,
       default: "",
     },
-    
+
     coverImage: {
       type: String,
       default: "",
