@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import uploadToCloudinary from "../helper/uploadToCloudinary.js";
 import deleteFromCloudinary from "../helper/deleteFromCloudinary.js";
-
+import Post from "../models/post.model.js";
 import { users } from "@clerk/clerk-sdk-node";
 
 export const createUser = async (req, res) => {
