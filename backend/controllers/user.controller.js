@@ -201,9 +201,7 @@ export const updateUser = async (req, res) => {
 //   }
 // };
 
-import User from "../models/user.model.js";
-import Post from "../models/post.model.js";
-import { deleteFromCloudinary } from "../utils/cloudinary.js";
+
 
 export const handleClerkWebhook = async (req, res) => {
   try {
