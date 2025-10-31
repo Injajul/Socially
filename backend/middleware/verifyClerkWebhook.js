@@ -16,6 +16,7 @@ export const verifyClerkWebhook = async (req, res, next) => {
       "svix-timestamp": headers["svix-timestamp"],
       "svix-signature": headers["svix-signature"],
     });
+     console.log("✅ Clerk webhook verified:", req.event.type);
     next();
   } catch (err) {
     console.error("Webhook signature verification failed:", err.message);

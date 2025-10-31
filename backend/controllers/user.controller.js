@@ -219,6 +219,8 @@ export const handleClerkWebhook = async (req, res) => {
   try {
     const event = req.event;
     const { type, data } = event;
+    console.log("🔔 Received Clerk webhook event:", event.type);
+
 
     if (type === "user.deleted") {
       const clerkId = data.id;

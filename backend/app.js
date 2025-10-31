@@ -1,7 +1,11 @@
+// app.js or index.js
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
+import { verifyClerkWebhook } from "./middleware/verifyClerkWebhook.js"; 
+import { handleClerkWebhook } from "./controllers/user.controller.js"; 
+
 
 dotenv.config();
 
@@ -14,8 +18,9 @@ import messageRoutes from "./routes/message.routes.js";
 const app = express();
 
 const Base_URL = true;
-const allowedOrigins = Base_URL ? "https://socially-xi-wheat.vercel.app" :"http://localhost:5173"
-
+const allowedOrigins = Base_URL
+  ? "https://socially-xi-wheat.vercel.app"
+  : "http://localhost:5173";
 
 console.log("✅ Allowed origins:", allowedOrigins);
 
@@ -26,9 +31,14 @@ app.use(
   })
 );
 
+// ⚠️ Important: Clerk requires raw body for signature verification
+app.post("/api/webhook/clerk", express.raw({ type: "application/json" }), verifyClerkWebhook, handleClerkWebhook);
+
+// After webhook, parse JSON for rest of routes
 app.use(express.json());
 app.use(cookieParser());
 
+// Your app routes
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
