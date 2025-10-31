@@ -28,9 +28,9 @@ const UserFollwers = () => {
           className="bg-[#101826] rounded-xl border border-gray-800 hover:border-blue-600 hover:shadow-lg cursor-pointer overflow-hidden text-center p-4 transition-all"
         >
           <div className="w-24 h-24 mx-auto rounded-full overflow-hidden bg-gray-700 flex items-center justify-center">
-            {user.coverImage ? (
+            {user.profileImage ? (
               <img
-                src={user.coverImage}
+                src={user.profileImage}
                 alt={user.fullName}
                 className="object-cover w-full h-full"
               />

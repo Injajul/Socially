@@ -5,14 +5,12 @@ import { toast } from "react-toastify";
 import { useAuth } from "@clerk/clerk-react";
 import { toggleFollow } from "../../redux/slices/userSlice";
 
-const FollowBtn = ({ userId }) => {
+const FollowBtn = ({ userId, className = "" }) => {
   const dispatch = useDispatch();
   const { getToken } = useAuth();
   const { currentAuthUser, loading } = useSelector((state) => state.user);
-
   const [localLoading, setLocalLoading] = useState(false);
 
-  // Directly compute following state from Redux
   const isFollowing =
     currentAuthUser?.following?.some(
       (f) => f._id?.toString() === userId?.toString()
@@ -35,7 +33,7 @@ const FollowBtn = ({ userId }) => {
     }
   };
 
-  if (!currentAuthUser || currentAuthUser._id === userId) return null; // hide if same user
+  if (!currentAuthUser || currentAuthUser._id === userId) return null;
 
   return (
     <motion.button
@@ -43,12 +41,12 @@ const FollowBtn = ({ userId }) => {
       whileHover={{ scale: 1.05 }}
       onClick={handleToggleFollow}
       disabled={localLoading || loading}
-      className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold transition-colors duration-200 shadow-md
+      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full font-semibold transition-colors duration-200 shadow-md
         ${
           isFollowing
             ? "bg-gray-300 text-gray-900 hover:bg-gray-400"
             : "bg-blue-600 text-white hover:bg-blue-700"
-        } ${localLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+        } ${localLoading ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
     >
       <span>{isFollowing ? "Following" : "Follow"}</span>
     </motion.button>

@@ -10,14 +10,23 @@ import { useSocket } from "../../redux/socket";
 import UserChat from "./UserChat";
 import ChatWindow from "./ChatWindow";
 import { HiMenuAlt2 } from "react-icons/hi";
+import { useLocation } from "react-router-dom";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
   const { getToken } = useAuth();
   const { chatUsers, messages } = useSelector((state) => state.messages);
-  const [selectedUser, setSelectedUser] = useState(null);
+  // const [selectedUser, setSelectedUser] = useState(null);
   const [isUserPanelOpen, setIsUserPanelOpen] = useState(false);
+
+
   const socket = useSocket();
+const location = useLocation();
+const preselectedUser = location.state?.selectedUser || null;
+
+const [selectedUser, setSelectedUser] = useState(preselectedUser);
+
+
 
   // ✅ Real-time listener
   useEffect(() => {

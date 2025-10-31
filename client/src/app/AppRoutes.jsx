@@ -24,14 +24,15 @@ export default function AppRoutes() {
       {/* AUTH ROUTES */}
       <Route element={<AppAuthLayout />}>
         <Route path="/signup" element={<Signup />} />
+         <Route path="/login" element={<Login />} />
         <Route path="/create-user" element={<CreateUser />} />
-        <Route path="/login" element={<Login />} />
+       
       </Route>
 
       {/* MAIN APP ROUTES */}
       <Route element={<AppMainLayout />}>
         {/* Public routes */}
-        {/* <Route path="/" element={<Home />} /> */}
+       
         <Route path="/" element={<Home />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="/all-users" element={<AllUsers />} />

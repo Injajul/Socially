@@ -47,7 +47,7 @@ console.log("posts",posts)
         <PostCard key={post._id} post={post} />
       ))
     ) : (
-      <div className="text-center text-gray-500 mt-10">No posts yet on this user account</div>
+      <div className="text-center text-gray-500 mt-10">No posts on this platform yet </div>
     )}
   </div>
 );

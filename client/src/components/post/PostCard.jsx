@@ -15,7 +15,7 @@ const PostCard = ({ post }) => {
   const { user, media, caption, tags, likes, views,commentsCount, createdAt, _id } = post;
 
   const { comments } = useSelector((state) => state.comments);
-    console.log("comments on  PostCard",comments)
+    // console.log("comments on  PostCard",comments)
   const [showComments, setShowComments] = useState(false);
   const dispatch = useDispatch();
   const { getToken } = useAuth();
@@ -56,7 +56,7 @@ const PostCard = ({ post }) => {
           className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
         >
           <img
-            src={user?.coverImage || "/default-avatar.png"}
+            src={user?.profileImage }
             alt={user?.fullName}
             className="w-10 h-10 rounded-full object-cover"
           />
@@ -71,7 +71,11 @@ const PostCard = ({ post }) => {
         </div>
 
         {/* 👇 Right: Follow button */}
-        <FollowBtn userId={user?._id} />
+       
+         <FollowBtn
+            userId={user?._id}
+            className="sm:w-40 bg-blue-600 hover:bg-blue-700"
+          />
       </div>
 
 

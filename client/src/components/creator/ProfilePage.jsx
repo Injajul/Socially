@@ -8,6 +8,7 @@ import {
 import FollowBtn from "../creator/FollowBtn";
 import PostModal from "./PostModal";
 import { useAuth } from "@clerk/clerk-react";
+import { FaArrowLeft } from "react-icons/fa";
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const { userId } = useParams();
@@ -17,8 +18,7 @@ const ProfilePage = () => {
     (state) => state.posts
   );
   const { currentAuthUser } = useSelector((state) => state.user);
-  console.log("userPosts", userPosts);
-  console.log("userInfo", userInfo);
+
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -68,61 +68,84 @@ const ProfilePage = () => {
       </div>
     );
 
-
   return (
-    <div className="max-w-4xl mx-auto pt-10 pb-20 sm:pb-0">
+    <div className="max-w-4xl mx-auto   sm:pt-6 pb-20 sm:pb-0">
+      {/* Go Back Button */}
+      <div className="w-full md:w-auto mb-4 md:mb-0 flex justify-start">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-gray-300 hover:text-white transition px-2 py-1"
+        >
+          <FaArrowLeft /> Go Back
+        </button>
+      </div>
       {/* 🧑‍💼 Profile Header */}
-      <div className="flex items-center gap-6 px-4">
-        <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-          {userInfo?.coverImage ? (
-            <img
-              src={userInfo.coverImage}
-              alt={userInfo.fullName}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <span className="text-gray-600 text-3xl font-semibold">
-              {userInfo?.fullName?.charAt(0) || "U"}
-            </span>
-          )}
+      <div className="flex items-center  sm:flex-row sm:items-center sm:gap-10 px-4 pb-4 border-b border-gray-500">
+        {/* 👤 Profile Image */}
+        <div className="flex justify-center sm:justify-start w-full sm:w-auto">
+          <div className="w-28 h-28 rounded-full bg-gray-300 overflow-hidden flex items-center justify-center">
+            {userInfo?.profileImage ? (
+              <img
+                src={userInfo.profileImage}
+                alt={userInfo.fullName}
+                className="object-cover w-full h-full"
+              />
+            ) : (
+              <span className="text-gray-600 text-3xl font-semibold">
+                {userInfo?.fullName?.charAt(0) || "U"}
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-          <h2 className="text-xl mb-2  font-semibold text-gray-900 dark:text-gray-100">
-            {userInfo?.fullName}
-          </h2>
-          <button>
-            <FollowBtn userId={userInfo?._id} />
-          </button>
+        {/* 🧾 Profile Info */}
+        <div className="flex flex-col flex-1 mt-4 sm:mt-0">
+          {/* Name + Buttons */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              {userInfo?.fullName}
+            </h2>
+            <div className="flex gap-3 mt-2 sm:mt-0">
+              <FollowBtn
+                userId={userInfo?._id}
+                className="px-5 py-1.5 text-sm sm:w-auto bg-blue-600 hover:bg-blue-700"
+              />
+              <button
+                onClick={() =>
+                  navigate("/chats", { state: { selectedUser: userInfo } })
+                }
+                className="px-5 py-1.5 text-sm rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
+              >
+                Message
+              </button>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="flex  gap-8 mt-4 text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            <p>
+              <span className="font-semibold ">{userPosts?.length || 0}</span>{" "}
+              posts
+            </p>
+            <p>
+              <span className="font-semibold">
+                {userInfo?.followersCount || 0}
+              </span>{" "}
+              followers
+            </p>
+            <p>
+              <span className="font-semibold">
+                {userInfo?.followingCount || 0}
+              </span>{" "}
+              following
+            </p>
+          </div>
         </div>
       </div>
-
-      {/* 🧾 User Stats */}
-      <div className="px-4 mt-4">
-        <div className="flex gap-6 text-sm text-gray-600 dark:text-gray-400">
-          <p>
-            <span className="font-semibold">{userPosts.length}</span> posts
-          </p>
-          <p>
-            <span className="font-semibold">
-              {userInfo?.followersCount || 0}
-            </span>{" "}
-            followers
-          </p>
-          <p>
-            <span className="font-semibold">
-              {userInfo?.followingCount || 0}
-            </span>{" "}
-            following
-          </p>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-300 my-6"></div>
 
       {/* 🖼️ Posts Grid */}
       {userPosts.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-2">
+        <div className="grid grid-cols-2 mt-4 sm:grid-cols-3 gap-4 px-2">
           {userPosts.map((post) => (
             <div key={post._id} className="flex flex-col items-center">
               <div

@@ -5,16 +5,15 @@ import { Navigate } from "react-router-dom";
 function Login() {
   const { isSignedIn } = useUser();
 
-  // If already signed in, redirect or show message
   if (isSignedIn) {
-    return <Navigate to="/" />; // or any page you want
+    return <Navigate to="/" />;
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <SignIn
-        afterSignInUrl="/" 
-        
+        signUpUrl="/signup"      // 👈 redirect Clerk’s “Sign up” link to your route
+        afterSignInUrl="/"        // 👈 redirect after login
       />
     </div>
   );

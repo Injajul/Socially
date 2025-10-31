@@ -11,7 +11,7 @@ const CommentsSection = ({ postId, onClose }) => {
   const { getToken } = useAuth();
   const { user } = useUser();
   const { comments, loading, error } = useSelector((state) => state.comments);
-  console.log("comment from CommentsSection",comments)
+  // console.log("comment from CommentsSection",comments)
   const [text, setText] = useState("");
 
   // 🧠 Fetch comments

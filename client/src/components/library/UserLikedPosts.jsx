@@ -1,13 +1,34 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
+import { fetchAllPosts } from "../../redux/slices/postSlice"; // adjust path
+import { useAuth } from "@clerk/clerk-react";
 const UserLikedPosts = () => {
-  const { currentAuthUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { getToken,isLoaded } = useAuth();
+  const { posts } = useSelector((state) => state.posts);
+  const { currentAuthUser } = useSelector((state) => state.user);
 
-  const likedPosts = currentAuthUser?.likedPosts || [];
+  useEffect(() => {
+    const fetchUser = async () => {
+        if (!isLoaded) return;
+      try {
+        const token = await getToken(); 
+         dispatch(fetchAllPosts(token));
+        
+      } catch (err) {
+        console.error("Failed to get Clerk token", err);
+      }
+    };
+  
+    fetchUser();
+  }, [dispatch, getToken, isLoaded]);
+
+  const likedPosts = posts.filter((post) =>
+    post.likes.includes(currentAuthUser?._id)
+  );
 
   if (!likedPosts.length) {
     return (
@@ -27,10 +48,9 @@ const UserLikedPosts = () => {
             key={post._id}
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.3 }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate(`/post/${post._id}`)}
             className="rounded-xl overflow-hidden bg-[#101826] border border-gray-800 hover:border-blue-600 hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
-            {/* Media */}
             <div className="relative w-full aspect-square bg-black flex items-center justify-center overflow-hidden">
               {mediaUrl ? (
                 mediaUrl.endsWith(".mp4") ? (
@@ -53,7 +73,6 @@ const UserLikedPosts = () => {
               )}
             </div>
 
-            {/* Caption */}
             <div className="p-3">
               <p className="text-gray-200 text-sm line-clamp-3 whitespace-pre-wrap">
                 {post.caption || "No caption provided."}

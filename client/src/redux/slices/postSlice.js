@@ -21,7 +21,7 @@ export const fetchAllPosts = createAsyncThunk(
   async (token, { rejectWithValue }) => {
     try {
       const res = await api.fetchAllPost(token);
-      console.log("All posts fetched:", res.data);
+      // console.log("All posts fetched:", res.data);
       return res.data.posts;
     } catch (error) {
       return rejectWithValue(
@@ -50,7 +50,7 @@ export const fetchPostById = createAsyncThunk(
   async ({ postId, token }, { rejectWithValue }) => {
     try {
       const res = await api.getPostById(postId, token);
-      console.log("Fetched Post:", res.data);
+      // console.log("Fetched Post:", res.data);
       return res.data.post;
     } catch (err) {
       return rejectWithValue(

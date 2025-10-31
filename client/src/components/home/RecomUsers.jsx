@@ -19,17 +19,17 @@ const RecomUsers = () => {
   if (!users?.length) return null;
 
   return (
-    <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-3    h-fit">
+    <div className="hidden md:block bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-3  h-fit">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
         Suggested for you
       </h2>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 ">
         {users.slice(0, 8).map((user) => (
           <div
             key={user._id}
             onClick={() => navigate(`/profile/${user._id}`)}
-            className="flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl p-2 transition"
+            className="flex border border-gray-500 items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl p-2 transition"
           >
             <div className="flex items-center gap-3">
               <img
@@ -41,9 +41,6 @@ const RecomUsers = () => {
                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {user.fullName}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
-                  {user.bio || "No bio yet"}
-                </p>
               </div>
             </div>
             <FollowBtn userId={user?._id} />

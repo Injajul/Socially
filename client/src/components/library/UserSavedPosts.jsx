@@ -1,18 +1,47 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { fetchAllPosts } from "../../redux/slices/postSlice";
+import { fetchCurrentAuthUser } from "../../redux/slices/userSlice";
+import { useAuth } from "@clerk/clerk-react";
 
 const UserSavedPosts = () => {
-  const { currentAuthUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { posts } = useSelector((state) => state.posts);
+  const { currentAuthUser } = useSelector((state) => state.user);
 
-  const savedPosts = currentAuthUser?.savedPosts || [];
+  const { getToken, isLoaded } = useAuth();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isLoaded) return;
+
+      try {
+        const token = await getToken();
+        // 1️⃣ Fetch current user again (from backend using Clerk ID)
+        await dispatch(fetchCurrentAuthUser(token));
+        // 2️⃣ Fetch all posts
+        await dispatch(fetchAllPosts(token));
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      }
+    };
+
+    fetchData();
+  }, [dispatch, getToken, isLoaded]);
+
+  // Extract just the IDs from user's saved posts
+  const savedPostIds = (currentAuthUser?.savedPosts || []).map((p) => p._id);
+
+  // Filter posts that match these IDs
+  const savedPosts = posts.filter((post) => savedPostIds.includes(post._id));
 
   if (!savedPosts.length) {
     return (
       <p className="text-gray-400 text-center mt-10 text-lg">
-        You haven’t liked any posts yet.
+        You haven’t saved any posts yet.
       </p>
     );
   }
@@ -27,10 +56,9 @@ const UserSavedPosts = () => {
             key={post._id}
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.3 }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate(`/post/${post._id}`)}
             className="rounded-xl overflow-hidden bg-[#101826] border border-gray-800 hover:border-blue-600 hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
-            {/* Media */}
             <div className="relative w-full aspect-square bg-black flex items-center justify-center overflow-hidden">
               {mediaUrl ? (
                 mediaUrl.endsWith(".mp4") ? (
@@ -44,7 +72,7 @@ const UserSavedPosts = () => {
                 ) : (
                   <img
                     src={mediaUrl}
-                    alt="Liked media"
+                    alt="Saved media"
                     className="w-full h-full object-cover"
                   />
                 )
@@ -53,7 +81,6 @@ const UserSavedPosts = () => {
               )}
             </div>
 
-            {/* Caption */}
             <div className="p-3">
               <p className="text-gray-200 text-sm line-clamp-3 whitespace-pre-wrap">
                 {post.caption || "No caption provided."}
@@ -70,7 +97,3 @@ const UserSavedPosts = () => {
 };
 
 export default UserSavedPosts;
-
-
-
-

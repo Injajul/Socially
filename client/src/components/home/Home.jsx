@@ -11,7 +11,7 @@ function Home() {
       </div>
 
       {/* SIDEBAR (Recommended Users) — visible from md and up */}
-      <div className="hidden md:block w-[280px] lg:w-[300px] shrink-0">
+      <div className="hidden md:block w-[280px] lg:w-[300px] shrink-0 mr-20">
         <RecomUsers />
       </div>
     </div>

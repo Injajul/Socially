@@ -68,7 +68,7 @@ const ChatWindow = ({ selectedUser, messages, socket }) => {
     <div className="flex flex-col h-full pb-20 lg:pb-0">
       <div className="border-b border-gray-200 dark:border-gray-700 p-3 flex items-center gap-3">
         <img
-          src={selectedUser.coverImage || "/default-avatar.png"}
+          src={selectedUser.profileImage || "/default-avatar.png"}
           alt={selectedUser.fullName}
           className="w-10 h-10 rounded-full object-cover border"
         />

@@ -130,79 +130,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// export const handleClerkWebhook = async (req, res) => {
-//   try {
-//     const event = req.event;
-//     const { type, data } = event;
-//     console.log("🔔 Received Clerk webhook event:", event.type);
-
-//     if (type === "user.deleted") {
-//       const clerkId = data.id;
-
-//       // Find the user
-//       const user = await User.findOne({ clerkId });
-
-//       if (user) {
-//         // 1️⃣ Delete user's cover image from Cloudinary
-//         if (user.coverImage) {
-//           try {
-//             await deleteFromCloudinary(user.coverImage);
-//           } catch (err) {
-//             console.warn("Failed to delete Cloudinary image:", err.message);
-//           }
-//         }
-
-//         // 2️⃣ Remove references in other users' followers/following
-//         await User.updateMany(
-//           { followers: user._id },
-//           { $pull: { followers: user._id } }
-//         );
-//         await User.updateMany(
-//           { following: user._id },
-//           { $pull: { following: user._id } }
-//         );
-
-//         // 3️⃣ Remove references in posts liked/saved by others
-//         await Post.updateMany(
-//           { likes: user._id },
-//           { $pull: { likes: user._id } }
-//         );
-//         await Post.updateMany(
-//           { savedBy: user._id },
-//           { $pull: { savedBy: user._id } }
-//         );
-
-//         // 4️⃣ Delete all posts uploaded by the user (optional: delete media from Cloudinary)
-//         const uploadedPosts = await Post.find({ uploadedBy: user._id });
-//         for (const post of uploadedPosts) {
-//           // Delete media if needed
-//           for (const media of post.media) {
-//             try {
-//               await deleteFromCloudinary(media.url);
-//             } catch (err) {
-//               console.warn("Failed to delete post media:", err.message);
-//             }
-//           }
-//           await Post.deleteOne({ _id: post._id });
-//         }
-
-//         // 5️⃣ Finally, delete the user
-//         await User.deleteOne({ clerkId });
-//         console.log(`Deleted user ${clerkId} and all related data`);
-//       }
-//     } else {
-//       console.log("Unhandled Clerk webhook event:", type);
-//     }
-
-//     res.status(200).json({ message: "Webhook processed" });
-//   } catch (error) {
-//     console.error("Error handling webhook:", error);
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// };
-
-
-
 export const handleClerkWebhook = async (req, res) => {
   try {
     const event = req.event;
@@ -321,6 +248,7 @@ export const handleClerkWebhook = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
+    
     const users = await User.find().sort({ createdAt: -1 });
 
     res.status(200).json(users);

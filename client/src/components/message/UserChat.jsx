@@ -21,7 +21,7 @@ const UserChat = ({ users, onSelect, selectedUser }) => {
               }`}
             >
               <img
-                src={user.coverImage}
+                src={user.profileImage}
                 alt={user.fullName}
                 className="w-10 h-10 rounded-full object-cover border border-gray-300"
               />
