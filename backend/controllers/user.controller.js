@@ -1,59 +1,7 @@
 import User from "../models/user.model.js";
-import uploadToCloudinary from "../helper/uploadToCloudinary.js";
 import deleteFromCloudinary from "../helper/deleteFromCloudinary.js";
 import Post from "../models/post.model.js";
-import { users } from "@clerk/clerk-sdk-node";
 
-export const createUser = async (req, res) => {
-  try {
-    const { bio } = req.body;
-    const clerkId = req.auth.userId;
-
-    if (!clerkId)
-      return res.status(400).json({ message: "clerkId is required" });
-
-    // Fetch user info from Clerk
-    const clerkUser = await users.getUser(clerkId);
-
-    if (!clerkUser)
-      return res.status(404).json({ message: "Clerk user not found" });
-
-    // Check if user already exists
-    let user = await User.findOne({ clerkId });
-
-    // Upload cover image if exists
-    let coverImageUrl = null;
-    if (req.file) {
-      const uploadResult = await uploadToCloudinary(req.file.path, {
-        folder: "visionversity/users",
-      });
-      coverImageUrl = uploadResult.secure_url;
-    }
-
-    if (user) {
-      return res.status(200).json({ message: "User already exists", user });
-    }
-
-    // Create new user
-    const newUser = await User.create({
-      clerkId: clerkId,
-      fullName:
-        clerkUser.firstName +
-        (clerkUser.lastName ? " " + clerkUser.lastName : ""),
-      email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
-      profileImage: clerkUser.imageUrl,
-      bio: bio || "",
-      coverImage: coverImageUrl || "",
-    });
-
-    return res
-      .status(201)
-      .json({ message: "User created successfully", user: newUser });
-  } catch (error) {
-    console.error("Error in createUser:", error);
-    res.status(500).json({ message: "Internal Server Error", error });
-  }
-};
 
 export const getCurrentUser = async (req, res) => {
   try {
@@ -62,11 +10,11 @@ export const getCurrentUser = async (req, res) => {
     // Fetch user with selected fields and populate only necessary info
     const user = await User.findOne({ clerkId })
       .select(
-        "clerkId fullName profileImage email bio coverImage followers following likedPosts savedPosts uploadedPosts"
+        "clerkId fullName profileImage email  followers following likedPosts savedPosts uploadedPosts"
       )
       .populate({
         path: "followers following",
-        select: "clerkId fullName coverImage profileImage",
+        select: "clerkId fullName profileImage",
       })
       .populate({
         path: "likedPosts savedPosts uploadedPosts",
@@ -85,48 +33,87 @@ export const getCurrentUser = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
-    const { clerkId } = req.params;
-    const { bio } = req.body;
+    const users = await User.find().sort({ createdAt: -1 });
 
-    // Find the user first
-    const user = await User.findOne({ clerkId });
-    if (!user) {
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
+
+export const toggleFollow = async (req, res) => {
+  try {
+    const { userId } = req.params; // person to follow/unfollow
+    const clerkId = req.auth.userId; // logged-in user’s Clerk ID
+
+    // find logged-in user
+    const currentUser = await User.findOne({ clerkId });
+    if (!currentUser)
       return res.status(404).json({ message: "User not found" });
-    }
 
-    // If user uploaded a new cover image
-    if (req.file) {
-      // If previous coverImage exists → delete it from Cloudinary
-      if (user.coverImage) {
-        await deleteFromCloudinary(user.coverImage);
-      }
-
-      // Upload new image to Cloudinary
-      const uploadResult = await uploadToCloudinary(req.file.path, {
-        folder: "visionversity/users", // You can rename this folder for your app
+    // prevent following yourself
+    if (currentUser._id.toString() === userId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot follow yourself.",
       });
-
-      // Save Cloudinary URL
-      user.coverImage = uploadResult.secure_url;
     }
 
-    // Update bio (or any other text fields)
-    if (bio) {
-      user.bio = bio;
+    const targetUser = await User.findById(userId);
+    if (!targetUser)
+      return res.status(404).json({ message: "Target user not found" });
+
+    let isFollowing;
+
+    // check if already following
+    if (currentUser.following.includes(userId)) {
+      // 🔹 Unfollow logic
+      await Promise.all([
+        User.findByIdAndUpdate(currentUser._id, {
+          $pull: { following: userId },
+        }),
+        User.findByIdAndUpdate(userId, {
+          $pull: { followers: currentUser._id },
+        }),
+      ]);
+
+      isFollowing = false;
+    } else {
+      // 🔹 Follow logic
+      await Promise.all([
+        User.findByIdAndUpdate(currentUser._id, {
+          $addToSet: { following: userId },
+        }),
+        User.findByIdAndUpdate(userId, {
+          $addToSet: { followers: currentUser._id },
+        }),
+      ]);
+
+      isFollowing = true;
     }
 
-    // Save updates
-    await user.save();
+    const updatedUser = await User.findById(userId)
+      .select("fullName profileImage followers following")
+      .populate("followers", "fullName profileImage")
+      .populate("following", "fullName profileImage");
 
-    res.status(200).json({
-      message: "Profile updated successfully",
-      user,
+    return res.status(200).json({
+      success: true,
+      message: isFollowing
+        ? "Followed successfully."
+        : "Unfollowed successfully.",
+      isFollowing,
+      user: updatedUser,
     });
   } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ message: "Internal Server Error", error });
+    console.error("Toggle follow error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to toggle follow.",
+    });
   }
 };
 
@@ -243,90 +230,5 @@ export const handleClerkWebhook = async (req, res) => {
   } catch (error) {
     console.error("❌ Error handling webhook:", error);
     res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-
-export const getAllUsers = async (req, res) => {
-  try {
-    
-    const users = await User.find().sort({ createdAt: -1 });
-
-    res.status(200).json(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ message: "Failed to fetch users" });
-  }
-};
-
-export const toggleFollow = async (req, res) => {
-  try {
-    const { userId } = req.params; // person to follow/unfollow
-    const clerkId = req.auth.userId; // logged-in user’s Clerk ID
-
-    // find logged-in user
-    const currentUser = await User.findOne({ clerkId });
-    if (!currentUser)
-      return res.status(404).json({ message: "User not found" });
-
-    // prevent following yourself
-    if (currentUser._id.toString() === userId) {
-      return res.status(400).json({
-        success: false,
-        message: "You cannot follow yourself.",
-      });
-    }
-
-    const targetUser = await User.findById(userId);
-    if (!targetUser)
-      return res.status(404).json({ message: "Target user not found" });
-
-    let isFollowing;
-
-    // check if already following
-    if (currentUser.following.includes(userId)) {
-      // 🔹 Unfollow logic
-      await Promise.all([
-        User.findByIdAndUpdate(currentUser._id, {
-          $pull: { following: userId },
-        }),
-        User.findByIdAndUpdate(userId, {
-          $pull: { followers: currentUser._id },
-        }),
-      ]);
-
-      isFollowing = false;
-    } else {
-      // 🔹 Follow logic
-      await Promise.all([
-        User.findByIdAndUpdate(currentUser._id, {
-          $addToSet: { following: userId },
-        }),
-        User.findByIdAndUpdate(userId, {
-          $addToSet: { followers: currentUser._id },
-        }),
-      ]);
-
-      isFollowing = true;
-    }
-
-    const updatedUser = await User.findById(userId)
-      .select("fullName profileImage followers following")
-      .populate("followers", "fullName profileImage")
-      .populate("following", "fullName profileImage");
-
-    return res.status(200).json({
-      success: true,
-      message: isFollowing
-        ? "Followed successfully."
-        : "Unfollowed successfully.",
-      isFollowing,
-      user: updatedUser,
-    });
-  } catch (error) {
-    console.error("Toggle follow error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to toggle follow.",
-    });
   }
 };
