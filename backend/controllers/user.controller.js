@@ -117,11 +117,126 @@ export const toggleFollow = async (req, res) => {
   }
 };
 
+// export const handleClerkWebhook = async (req, res) => {
+//   try {
+//     const event = req.event;
+//     const { type, data } = event;
+   
+
+//     if (type === "user.created") {
+//       const clerkId = data.id;
+//       const existingUser = await User.findOne({ clerkId });
+
+//       if (!existingUser) {
+//         const newUser = new User({
+//           clerkId,
+//           fullName: data.first_name
+//             ? `${data.first_name} ${data.last_name || ""}`.trim()
+//             : "Anonymous",
+//           email: data.email_addresses?.[0]?.email_address || "",
+//           profileImage: data.image_url || "",
+//           username:
+//             data.username ||
+//             data.first_name?.toLowerCase() ||
+//             `user_${Date.now()}`,
+//         });
+
+//         await newUser.save();
+//         console.log(`✅ Created new user in MongoDB: ${clerkId}`);
+//       } else {
+//         console.log(`ℹ️ User already exists in DB: ${clerkId}`);
+//       }
+//     } else if (type === "user.updated") {
+//       const clerkId = data.id;
+//       const updates = {
+//         fullName: data.first_name
+//           ? `${data.first_name} ${data.last_name || ""}`.trim()
+//           : undefined,
+//         email: data.email_addresses?.[0]?.email_address,
+//         profileImage: data.image_url,
+//         username: data.username,
+//       };
+
+//       // Remove undefined fields
+//       Object.keys(updates).forEach(
+//         (key) => updates[key] === undefined && delete updates[key]
+//       );
+
+//       const updatedUser = await User.findOneAndUpdate({ clerkId }, updates, {
+//         new: true,
+//       });
+
+//       if (updatedUser) {
+//         console.log(`✅ Updated user info in MongoDB: ${clerkId}`);
+//       } else {
+//         console.log(`⚠️ Tried to update non-existing user: ${clerkId}`);
+//       }
+//     } else if (type === "user.deleted") {
+//       const clerkId = data.id;
+//       const user = await User.findOne({ clerkId });
+
+//       if (user) {
+//         // 1️⃣ Delete user's cover image from Cloudinary
+//         if (user.coverImage) {
+//           try {
+//             await deleteFromCloudinary(user.coverImage);
+//           } catch (err) {
+//             console.warn("⚠️ Failed to delete Cloudinary image:", err.message);
+//           }
+//         }
+
+//         // 2️⃣ Clean up relationships and posts
+//         await User.updateMany(
+//           { followers: user._id },
+//           { $pull: { followers: user._id } }
+//         );
+//         await User.updateMany(
+//           { following: user._id },
+//           { $pull: { following: user._id } }
+//         );
+//         await Post.updateMany(
+//           { likes: user._id },
+//           { $pull: { likes: user._id } }
+//         );
+//         await Post.updateMany(
+//           { savedBy: user._id },
+//           { $pull: { savedBy: user._id } }
+//         );
+
+//         // 3️⃣ Delete user's posts
+//         const uploadedPosts = await Post.find({ uploadedBy: user._id });
+//         for (const post of uploadedPosts) {
+//           for (const media of post.media) {
+//             try {
+//               await deleteFromCloudinary(media.url);
+//             } catch (err) {
+//               console.warn("⚠️ Failed to delete post media:", err.message);
+//             }
+//           }
+//           await Post.deleteOne({ _id: post._id });
+//         }
+
+//         // 4️⃣ Delete the user record
+//         await User.deleteOne({ clerkId });
+//         console.log(`🧹 Deleted user ${clerkId} and related data`);
+//       } else {
+//         console.log(`⚠️ Tried to delete non-existing user: ${clerkId}`);
+//       }
+//     } else {
+//       console.log("Unhandled Clerk webhook event:", type);
+//     }
+
+//     res.status(200).json({ message: "Webhook processed" });
+//   } catch (error) {
+//     console.error("❌ Error handling webhook:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 export const handleClerkWebhook = async (req, res) => {
   try {
     const event = req.event;
     const { type, data } = event;
-    console.log("🔔 Received Clerk webhook event:", type);
 
     if (type === "user.created") {
       const clerkId = data.id;
@@ -142,9 +257,6 @@ export const handleClerkWebhook = async (req, res) => {
         });
 
         await newUser.save();
-        console.log(`✅ Created new user in MongoDB: ${clerkId}`);
-      } else {
-        console.log(`ℹ️ User already exists in DB: ${clerkId}`);
       }
     } else if (type === "user.updated") {
       const clerkId = data.id;
@@ -157,35 +269,22 @@ export const handleClerkWebhook = async (req, res) => {
         username: data.username,
       };
 
-      // Remove undefined fields
       Object.keys(updates).forEach(
         (key) => updates[key] === undefined && delete updates[key]
       );
 
-      const updatedUser = await User.findOneAndUpdate({ clerkId }, updates, {
-        new: true,
-      });
-
-      if (updatedUser) {
-        console.log(`✅ Updated user info in MongoDB: ${clerkId}`);
-      } else {
-        console.log(`⚠️ Tried to update non-existing user: ${clerkId}`);
-      }
+      await User.findOneAndUpdate({ clerkId }, updates, { new: true });
     } else if (type === "user.deleted") {
       const clerkId = data.id;
       const user = await User.findOne({ clerkId });
 
       if (user) {
-        // 1️⃣ Delete user's cover image from Cloudinary
         if (user.coverImage) {
           try {
             await deleteFromCloudinary(user.coverImage);
-          } catch (err) {
-            console.warn("⚠️ Failed to delete Cloudinary image:", err.message);
-          }
+          } catch (err) {}
         }
 
-        // 2️⃣ Clean up relationships and posts
         await User.updateMany(
           { followers: user._id },
           { $pull: { followers: user._id } }
@@ -203,32 +302,22 @@ export const handleClerkWebhook = async (req, res) => {
           { $pull: { savedBy: user._id } }
         );
 
-        // 3️⃣ Delete user's posts
         const uploadedPosts = await Post.find({ uploadedBy: user._id });
         for (const post of uploadedPosts) {
           for (const media of post.media) {
             try {
               await deleteFromCloudinary(media.url);
-            } catch (err) {
-              console.warn("⚠️ Failed to delete post media:", err.message);
-            }
+            } catch (err) {}
           }
           await Post.deleteOne({ _id: post._id });
         }
 
-        // 4️⃣ Delete the user record
         await User.deleteOne({ clerkId });
-        console.log(`🧹 Deleted user ${clerkId} and related data`);
-      } else {
-        console.log(`⚠️ Tried to delete non-existing user: ${clerkId}`);
       }
-    } else {
-      console.log("Unhandled Clerk webhook event:", type);
     }
 
     res.status(200).json({ message: "Webhook processed" });
   } catch (error) {
-    console.error("❌ Error handling webhook:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

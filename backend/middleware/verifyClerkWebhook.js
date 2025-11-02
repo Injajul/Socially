@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-console.log("Webhook secret prefix:", WEBHOOK_SECRET?.slice(0, 8));
+
 if (!WEBHOOK_SECRET) {
   console.error("❌ Missing CLERK_WEBHOOK_SECRET in environment variables");
 }
@@ -18,14 +18,10 @@ export const verifyClerkWebhook = async (req, res, next) => {
       "svix-signature": req.headers["svix-signature"],
     };
 
-    console.log("Headers:", headers);
-    console.log("Raw body length:", payload.length);
-
+  
     const wh = new Webhook(WEBHOOK_SECRET);
     const evt = wh.verify(payload, headers);
-
-    console.log("✅ Clerk webhook verified:", evt.type);
-
+    
     req.event = evt;
     next();
   } catch (err) {

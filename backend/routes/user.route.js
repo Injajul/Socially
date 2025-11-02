@@ -32,7 +32,13 @@ router.post(
 router.get("/all", getAllUsers);
 
 
-router.post("/clerk", express.json({ type: "*/*" }), verifyClerkWebhook, handleClerkWebhook);
+// Clerk Webhook route (raw body required for signature verification)
+router.post(
+  "/clerk",
+  express.raw({ type: "application/json" }),
+  verifyClerkWebhook,
+  handleClerkWebhook
+);
 // Authenticated route
 router.get("/me", requireAuth, getCurrentUser);
 
