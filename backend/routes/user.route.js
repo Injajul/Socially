@@ -2,12 +2,10 @@
 import express from "express";
 import multer from "multer";
 import {
-  createUser,
   getAllUsers,
- toggleFollow,
+  toggleFollow,
   getCurrentUser,
-  updateUser,
-  handleClerkWebhook
+  handleClerkWebhook,
 } from "../controllers/user.controller.js";
 import { requireAuth } from "../middleware/clerkAuth.js";
 import { verifyClerkWebhook } from "../middleware/verifyClerkWebhook.js";
@@ -22,15 +20,7 @@ const upload = multer({
   },
 });
 
-// Create or update user (only if logged in)
-router.post(
-  "/create",
-  requireAuth,
-  upload.single("coverImage"), 
-  createUser
-);
 router.get("/all", getAllUsers);
-
 
 // Clerk Webhook route (raw body required for signature verification)
 router.post(
@@ -41,14 +31,6 @@ router.post(
 );
 // Authenticated route
 router.get("/me", requireAuth, getCurrentUser);
-
-// Update profile info (bio, image, etc.)
-router.put(
-  "/:clerkId",
-  requireAuth,
-  upload.single("coverImage"),
-  updateUser
-);
 
 router.put("/:userId/follow", requireAuth, toggleFollow);
 
