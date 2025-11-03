@@ -14,7 +14,7 @@ import messageRoutes from "./routes/message.routes.js";
 
 const app = express();
 
-const Base_URL = true;
+const Base_URL = false;
 const allowedOrigins = Base_URL
   ? "https://socially-xi-wheat.vercel.app"
   : "http://localhost:5173";

@@ -50,4 +50,5 @@ router.put(
 
 // 🧨 Delete post
 router.delete("/delete/:id", requireAuth, deletePost);
+
 export default router;

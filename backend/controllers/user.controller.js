@@ -117,22 +117,6 @@ export const toggleFollow = async (req, res) => {
   }
 };
 
-
-{
-  "type": "user.created",
-  "data": {
-    "id": "user_2abcd1234",
-    "first_name": "Elon",
-    "last_name": "Musk",
-    "email_addresses": [
-      { "email_address": "elon@example.com" }
-    ],
-    "username": "elonmusk",
-    "image_url": "https://example.com/avatar.jpg"
-  }
-}
-
-
 export const handleClerkWebhook = async (req, res) => {
   try {
     const event = req.event;

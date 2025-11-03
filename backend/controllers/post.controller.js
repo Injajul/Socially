@@ -72,9 +72,8 @@ export const createPost = async (req, res) => {
     // 💾 Save post
     await newPost.save();
 
-    // ✅ FIXED: use user._id (Mongo ObjectId) instead of clerkId (string)
     await User.findByIdAndUpdate(user._id, {
-      $push: { posts: newPost._id },
+      $push: { uploadedPosts: newPost._id },
     });
 
     // ✅ Response
@@ -99,19 +98,19 @@ export const getAllPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
- 
+
     const posts = await Post.find()
       .sort({ createdAt: -1 }) // newest first
       .skip(skip)
       .limit(limit)
       .populate({
         path: "user",
-        select: "fullName profileImage coverImage", // minimal user data
+        select: "fullName profileImage ", // minimal user data
       })
       .populate({
         path: "comments",
         select: "text user createdAt",
-        populate: { path: "user", select: "fullName coverImage" },
+        populate: { path: "user", select: "fullName profileImage" },
       })
       .select("media caption tags likes commentsCount views createdAt") // only necessary post fields
       .lean(); // plain JS objects for better performance
@@ -138,12 +137,12 @@ export const getPostById = async (req, res) => {
     const post = await Post.findById(postId)
       .populate({
         path: "user",
-        select: "fullName clerkId coverImage bio",
+        select: "fullName clerkId profileImage ",
       })
       .populate({
         path: "comments",
         select: "text user createdAt",
-        populate: { path: "user", select: "fullName coverImage" },
+        populate: { path: "user", select: "fullName profileImage" },
       })
       .select("media caption tags likes createdAt")
       .lean();
@@ -161,11 +160,49 @@ export const getPostById = async (req, res) => {
   }
 };
 
+export const getUserPosts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // ✅ Fetch user info
+    const user = await User.findById(userId)
+      .select("fullName profileImage  followers following")
+      .lean();
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // ✅ Get posts for that user
+    const posts = await Post.find({ user: userId })
+      .populate("user", "fullName profileImage")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // ✅ Add counts (for simplicity)
+    const userWithCounts = {
+      ...user,
+      followersCount: user.followers.length,
+      followingCount: user.following.length,
+    };
+
+    res.status(200).json({
+      user: userWithCounts,
+      posts,
+    });
+  } catch (error) {
+    console.error("Error fetching user and posts:", error);
+    res.status(500).json({ message: "Failed to fetch user and posts" });
+  }
+};
+
+
 export const togglePostLike = async (req, res) => {
   try {
     const { postId } = req.params;
     const clerkId = req.auth.userId;
-
 
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found." });
@@ -302,43 +339,6 @@ export const incrementPostViewCount = async (req, res) => {
   }
 };
 
-export const getUserPosts = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
-
-    // ✅ Fetch user info
-    const user = await User.findById(userId)
-      .select("fullName profileImage bio coverImage followers following")
-      .lean();
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    // ✅ Get posts for that user
-    const posts = await Post.find({ user: userId })
-      .populate("user", "fullName profileImage")
-      .sort({ createdAt: -1 })
-      .lean();
-
-    // ✅ Add counts (for simplicity)
-    const userWithCounts = {
-      ...user,
-      followersCount: user.followers.length,
-      followingCount: user.following.length,
-    };
-
-    res.status(200).json({
-      user: userWithCounts,
-      posts,
-    });
-  } catch (error) {
-    console.error("Error fetching user and posts:", error);
-    res.status(500).json({ message: "Failed to fetch user and posts" });
-  }
-};
 
 export const updatePost = async (req, res) => {
   try {
@@ -356,7 +356,9 @@ export const updatePost = async (req, res) => {
 
     // 🔐 Verify ownership
     if (post.user.toString() !== user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized to update this post." });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this post." });
     }
 
     // 🖼 Replace existing media if new files are uploaded
@@ -414,7 +416,6 @@ export const updatePost = async (req, res) => {
   }
 };
 
-// ❌ Delete Post
 export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
@@ -430,7 +431,9 @@ export const deletePost = async (req, res) => {
 
     // 🔐 Ownership check
     if (post.user.toString() !== user._id.toString()) {
-      return res.status(403).json({ message: "Not authorized to delete this post." });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this post." });
     }
 
     // 🧹 Remove post from user's uploadedPosts
