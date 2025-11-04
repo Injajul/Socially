@@ -28,10 +28,11 @@ export const getUsersForSidebar = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const clerkId = req.auth.userId;
+    const { id: userToChatClerkId } = req.params; // Clerk ID from URL
+
     const user = await User.findOne({ clerkId });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const { id: userToChatClerkId } = req.params; // Clerk ID from URL
     const userToChat = await User.findOne({ clerkId: userToChatClerkId });
     if (!userToChat)
       return res.status(404).json({ message: "Receiver not found" });

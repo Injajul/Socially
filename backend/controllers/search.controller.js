@@ -15,7 +15,7 @@ export const search = async (req, res) => {
           { email: { $regex: query, $options: "i" } },
         ],
       })
-        .select("fullName profileImage coverImage followers")
+        .select("fullName profileImage  followers")
         .limit(10);
 
       // Match posts by caption or tags
@@ -40,7 +40,7 @@ export const search = async (req, res) => {
       const topUsers = await User.find()
         .sort({ followers: -1 })
         .limit(5)
-        .select("fullName profileImage coverImage followers");
+        .select("fullName profileImage followers");
 
       return res.status(200).json({
         message: "No direct match found — showing newest and top creators.",

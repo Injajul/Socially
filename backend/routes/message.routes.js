@@ -19,7 +19,7 @@ router.post(
   requireAuth,
   upload.fields([
     { name: "images", maxCount: 5 }, // allow up to 5 images
-    { name: "videos", maxCount: 5 }, // allow up to 1 videos
+    { name: "videos", maxCount: 5 }, // allow up to 5 videos
   ]),
   sendMessage
 );

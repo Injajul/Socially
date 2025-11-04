@@ -257,7 +257,7 @@ export const replyToComment = async (req, res) => {
     // 👥 Populate reply with user details
     const populatedReply = await reply.populate(
       "user",
-      "fullName email profileImage"
+      "fullName  profileImage"
     );
 
     res.status(201).json({

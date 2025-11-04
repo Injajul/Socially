@@ -11,10 +11,10 @@ import {
 
 const router = express.Router();
 
-// 💬 Add comment to a video (supports nested replies via body.parentCommentId)
+// 💬 Add comment to a post(supports nested replies via body.parentCommentId)
 router.post("/comment/:postId", requireAuth, addCommentToPost);
 
-// 💭 Get all comments for a video
+// 💭 Get all comments for a post
 router.get("/comment/:postId", getPostComments);
 
 // ✏️ Update a comment (owner only)
