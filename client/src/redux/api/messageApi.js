@@ -22,19 +22,12 @@ export const getMessagesAPI = (userId, token) =>
     },
   });
 
-// 🚀 Send a message (supports text + media)
-// export const sendMessageAPI = (userId, formData, token) =>
-//   api.post(`/${userId}`, formData, {
-//     headers: {
-//       "Content-Type": "multipart/form-data",
-//       Authorization: `Bearer ${token}`,
-//     },
-//   });
+
 
 export const sendMessageAPI = (userId, formData, token) =>
   api.post(`/${userId}`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
-      // ❌ don't include "Content-Type"
+      
     },
   });

@@ -7,7 +7,7 @@ export const addComment = createAsyncThunk(
   "comments/addComment",
   async ({ postId, text, token }, { rejectWithValue }) => {
     try {
-      const { data } = await commentAPI.addCommentAPI(postId, text, token);
+      const res =await commentAPI.addCommentAPI(postId, text, token);
       console.log("data.comment", data.comment);
       return data.comment;
     } catch (err) {

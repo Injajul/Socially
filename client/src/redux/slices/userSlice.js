@@ -4,18 +4,6 @@ import * as api from "../api/userApi";
 
 // --- Thunks ---
 
-export const createUser = createAsyncThunk(
-  "user/signupUser",
-  async ({ formData, token }, { rejectWithValue }) => {
-    try {
-      const res = await api.createUser(formData, token);
-      return { user: res.data.user, token: res.data.token };
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Signup failed");
-    }
-  }
-);
-
 export const fetchCurrentAuthUser = createAsyncThunk(
   "user/fetchCurrentUser",
   async (token, { rejectWithValue }) => {
@@ -45,20 +33,6 @@ export const fetchAllUser = createAsyncThunk(
   }
 );
 
-export const updateUser = createAsyncThunk(
-  "user/updateUser",
-  async ({ userId, formData }, { rejectWithValue }) => {
-    try {
-      const res = await api.updateUser(userId, formData);
-
-      // console.log("🔍 updateUser res.data.user", res.data.user);
-      return res.data.user;
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Update failed");
-    }
-  }
-);
-
 // ✅ Toggle Follow/Unfollow
 export const toggleFollow = createAsyncThunk(
   "user/toggleFollow",
@@ -80,11 +54,11 @@ const userSlice = createSlice({
   name: "authUser",
   initialState: {
     users: [],
-    viewingUser: null,  
+    viewingUser: null,
     currentAuthUser: null,
     loading: false,
     authUserLoading: false,
-    updateUserLoading: false,
+   
     error: null,
   },
   reducers: {
@@ -98,19 +72,6 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Signup
-      .addCase(createUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createUser.fulfilled, (state, action) => {
-        state.currentAuthUser = action.payload.user;
-        state.token = action.payload.token;
-      })
-      .addCase(createUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
 
       // Auth Check
       .addCase(fetchCurrentAuthUser.pending, (state) => {
@@ -136,19 +97,6 @@ const userSlice = createSlice({
       })
       .addCase(fetchAllUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
-      })
-
-      // Update
-      .addCase(updateUser.pending, (state) => {
-        state.updateUserLoading = true;
-        state.error = null;
-      })
-      .addCase(updateUser.fulfilled, (state, action) => {
-        state.currentUser = action.payload;
-        state.updateUserLoading = false;
-      })
-      .addCase(updateUser.rejected, (state, action) => {
         state.error = action.payload;
       })
 

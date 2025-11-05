@@ -7,9 +7,7 @@ import ProtectedRoute from "./ProtectedRoute";
 // import Home from "../pages/Home";
 import Signup from "../components/register/Signup";
 import Login from "../components/register/Login";
-import CreateUser from "../components/register/CreateUser";
 import CreatePosts from "../components/creator/CreatePosts";
-
 import ProfilePage from "../components/creator/ProfilePage";
 import AllUsers from "../components/creator/AllUsers";
 import MyLibrary from "../components/library/MyLibrary";
@@ -24,15 +22,13 @@ export default function AppRoutes() {
       {/* AUTH ROUTES */}
       <Route element={<AppAuthLayout />}>
         <Route path="/signup" element={<Signup />} />
-         <Route path="/login" element={<Login />} />
-        <Route path="/create-user" element={<CreateUser />} />
-       
+        <Route path="/login" element={<Login />} />
       </Route>
 
       {/* MAIN APP ROUTES */}
       <Route element={<AppMainLayout />}>
         {/* Public routes */}
-       
+
         <Route path="/" element={<Home />} />
         <Route path="/profile/:userId" element={<ProfilePage />} />
         <Route path="/all-users" element={<AllUsers />} />
