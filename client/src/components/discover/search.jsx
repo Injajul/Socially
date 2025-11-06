@@ -74,7 +74,7 @@ const SearchBar = () => {
                   <div className="relative">
                     <img
                       src={
-                        user.coverImage ||
+                        user.profileImage ||
                         "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                       }
                       alt={user.fullName}

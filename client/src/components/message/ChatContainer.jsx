@@ -16,7 +16,7 @@ const ChatContainer = () => {
   const dispatch = useDispatch();
   const { getToken } = useAuth();
   const { chatUsers, messages } = useSelector((state) => state.messages);
-  // const [selectedUser, setSelectedUser] = useState(null);
+
   const [isUserPanelOpen, setIsUserPanelOpen] = useState(false);
 
 

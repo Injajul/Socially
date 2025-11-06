@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { fetchAllPosts } from "../../redux/slices/postSlice"; // adjust path
+import { fetchAllPosts } from "../../redux/slices/postSlice"; 
 import { useAuth } from "@clerk/clerk-react";
 const UserLikedPosts = () => {
   const navigate = useNavigate();

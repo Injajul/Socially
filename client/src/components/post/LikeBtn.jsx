@@ -14,6 +14,7 @@ const LikeBtn = ({ postId, likes = [] }) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(likes.length);
   const { getToken } = useAuth();
+  
   useEffect(() => {
     if (currentAuthUser) {
       setLiked(likes.includes(currentAuthUser._id));

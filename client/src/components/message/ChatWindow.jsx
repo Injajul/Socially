@@ -25,14 +25,14 @@ const ChatWindow = ({ selectedUser, messages, socket }) => {
     const formData = new FormData();
     formData.append("text", text || "");
 
-    // <-- FIX: append the actual File objects, and use field names "images" / "videos"
+   
     media.forEach(({ file, type }) => {
       if (type === "image") formData.append("images", file);
       else formData.append("videos", file);
     });
 
     try {
-      // <-- FIX: single dispatch
+     
       const resultAction = await dispatch(
         sendMessageThunk({ userId: selectedUser.clerkId, formData, token })
       );
@@ -40,7 +40,7 @@ const ChatWindow = ({ selectedUser, messages, socket }) => {
       const newMessage = resultAction.payload;
       console.log("newMessage", newMessage);
 
-      // <-- FIX: emit with clerkId (what your server uses to map socket)
+      
       if (socket && newMessage) {
         socket.emit("sendMessage", {
           receiverClerkId: selectedUser.clerkId,

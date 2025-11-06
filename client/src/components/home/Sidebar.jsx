@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { NavLink } from "react-router-dom";
 import { FaHome, FaUserFriends, FaBars } from "react-icons/fa";
