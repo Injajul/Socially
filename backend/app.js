@@ -16,9 +16,11 @@ const app = express();
 
 const Base_URL = true;
 const allowedOrigins = Base_URL
-  ? "https://socially-xi-wheat.vercel.app"
+  ? "https://socially-tif1.vercel.app"
   : "http://localhost:5173";
 
+  // socially-xi-wheat.vercel.app
+ 
 app.use(
   cors({
     origin: allowedOrigins,
